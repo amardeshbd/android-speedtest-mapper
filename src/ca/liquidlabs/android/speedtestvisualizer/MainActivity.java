@@ -106,6 +106,8 @@ public class MainActivity extends Activity implements InputDialogListener {
         } else {
             // Handle other intents, such as being started from the home screen
         }
+        
+        startActivity(new Intent(getApplicationContext(), PlotterActivity.class));
     }
 
     @Override
