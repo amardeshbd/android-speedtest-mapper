@@ -43,6 +43,11 @@ public interface AppConstants {
      * Package name for SpeedTest(tm) app
      */
     String PACKAGE_SPEEDTEST_APP = "org.zwanoo.android.speedtest";
+    
+    /**
+     * Package name for this visualizer app
+     */
+    String PACKAGE_SPEEDTEST_VISUALIZER_APP = "ca.liquidlabs.android.speedtestvisualizer";
 
     /**
      * Used to create browser based intent for App page<br/>

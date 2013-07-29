@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -41,6 +42,8 @@ import ca.liquidlabs.android.speedtestvisualizer.util.CsvDataParser;
 import ca.liquidlabs.android.speedtestvisualizer.util.Tracer;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -48,6 +51,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.LatLngBounds.Builder;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.plus.PlusClient;
+import com.google.android.gms.plus.PlusOneButton;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,6 +69,14 @@ import java.util.List;
  */
 public class MapperActivity extends Activity {
     private static final String LOG_TAG = MapperActivity.class.getSimpleName();
+
+    // Google plus-one client and button
+    private PlusClient mPlusClient;
+    private PlusOneButton mPlusOneButton;
+
+    // The request code must be 0 or greater.
+    private static final int PLUS_ONE_REQUEST_CODE = 0;
+    private static final String PLUS_ONE_URL = AppConstants.PLAY_STORE_BASE_WEB_URI + AppConstants.PACKAGE_SPEEDTEST_VISUALIZER_APP;
 
     private GoogleMap mMap;
     private static List<SpeedTestRecord> mCsvListData;
@@ -97,6 +110,29 @@ public class MapperActivity extends Activity {
         // It seems like 4.0.x enables progress by default - STOP it!
         hideProgressIndicator();
 
+        // Get the google plus client
+        mPlusClient = new PlusClient.Builder(this, new GooglePlayServicesClient.ConnectionCallbacks() {
+            
+            @Override
+            public void onDisconnected() {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void onConnected() {
+                // TODO Auto-generated method stub
+                
+            }
+        }, new GooglePlayServicesClient.OnConnectionFailedListener() {
+            
+            @Override
+            public void onConnectionFailed(ConnectionResult arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+        }).clearScopes().build();
+        
         Spinner spinner = (Spinner) findViewById(R.id.spinner_conntype_filter);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.filters_array, android.R.layout.simple_spinner_item);
@@ -113,6 +149,13 @@ public class MapperActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (mPlusOneButton != null) {
+            // Refresh the state of the +1 button each time the activity
+            // receives focus.
+            mPlusOneButton.initialize(mPlusClient, PLUS_ONE_URL, PLUS_ONE_REQUEST_CODE);
+        }
+
         setUpMapIfNeeded();
     }
 
@@ -333,6 +376,18 @@ public class MapperActivity extends Activity {
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.mapper, menu);
+
+        // Get the google +1 view instance and initialize it.
+        mPlusOneButton = (PlusOneButton) menu.findItem(R.id.action_google_plus_one).getActionView();
+        mPlusOneButton.initialize(mPlusClient, PLUS_ONE_URL, null);
+        
+        return true;
     }
 
     @Override

@@ -57,6 +57,7 @@
     <string name="action_google_maps_attribution">About Maps</string>
     <string name="action_github_project">Get it on Github</string>
     <string name="action_github_project_short">Github</string>
+    <string name="action_google_plus_one">+1</string>
 
 
     <!-- UI element description for accessibility -->
